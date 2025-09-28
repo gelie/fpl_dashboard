@@ -64,15 +64,16 @@ def get_optional_user(request: Request):
         auth_header = request.headers.get("authorization")
         if not auth_header or not auth_header.startswith("Basic "):
             return None
-        
+
         import base64
+
         encoded_credentials = auth_header.split(" ")[1]
         decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8")
         username, password = decoded_credentials.split(":", 1)
-        
+
         is_correct_username = secrets.compare_digest(username, ADMIN_USERNAME)
         is_correct_password = secrets.compare_digest(password, ADMIN_PASSWORD)
-        
+
         if is_correct_username and is_correct_password:
             return username
         return None
@@ -208,19 +209,19 @@ def login_page(current_user: str = Depends(get_current_user)):
 def logout_clear():
     """Endpoint to clear credentials by returning 401"""
     import time
-    
+
     # Create a unique realm to force credential clearing
     logout_realm = f"Logout-{int(time.time())}"
-    
+
     response = Response(
-        content="Credentials cleared", 
+        content="Credentials cleared",
         status_code=401,
         headers={
-            "WWW-Authenticate": f"Basic realm=\"{logout_realm}\"",
+            "WWW-Authenticate": f'Basic realm="{logout_realm}"',
             "Cache-Control": "no-cache, no-store, must-revalidate",
             "Pragma": "no-cache",
-            "Expires": "0"
-        }
+            "Expires": "0",
+        },
     )
     return response
 
@@ -229,11 +230,11 @@ def logout_clear():
 def players(request: Request, session: Session = session):
     players = session.exec(select(Player)).all()
     form = PlayerForm()
-    
+
     context = {
-        "request": request, 
-        "players": players, 
-        "form": form, 
+        "request": request,
+        "players": players,
+        "form": form,
         "title": "Players",
     }
     context = add_auth_context(request, context)
@@ -274,7 +275,7 @@ def update_player(
 
 @app.delete("/players/{player_id}")
 def delete_player(
-    player_id: int, 
+    player_id: int,
     session: Session = session,
     current_user: str = Depends(get_current_user),
 ):
@@ -288,7 +289,7 @@ def delete_player(
 
 @app.post("/players/{player_id}/delete")
 def delete_player_form(
-    player_id: int, 
+    player_id: int,
     session: Session = session,
     current_user: str = Depends(get_current_user),
 ):
@@ -337,7 +338,7 @@ def scores(
     gameweeks = [s.gameweek for s in all_scores] if all_scores else [0]
     max_gameweek = max(gameweeks) if gameweeks else 0
     next_gameweek = max_gameweek + 1
-    
+
     context = {
         "request": request,
         "scores": scores,
@@ -360,36 +361,35 @@ async def create_scores_bulk(
 ):
     """Handle bulk score creation for all players in a gameweek"""
     form_data = await request.form()
-    
+
     # Get the gameweek from form
     gameweek = int(form_data.get("gameweek", 1))
-    
+
     # Get all players
     players = session.exec(select(Player)).all()
-    
+
     for player in players:
         # Get points and cost for this player from form
         week_points_key = f"week_points_{player.id}"
         week_cost_key = f"week_cost_{player.id}"
-        
+
         week_points = form_data.get(week_points_key)
         week_cost = form_data.get(week_cost_key)
-        
+
         # Skip if no data provided for this player
         if not week_points or not week_cost:
             continue
-            
+
         week_points = int(week_points)
         week_cost = int(week_cost)
-        
+
         # Check if score already exists for this player/gameweek
         existing_score = session.exec(
             select(Score).where(
-                Score.player_id == player.id,
-                Score.gameweek == gameweek
+                Score.player_id == player.id, Score.gameweek == gameweek
             )
         ).first()
-        
+
         if existing_score:
             # Update existing score
             existing_score.week_points = week_points
@@ -402,7 +402,8 @@ async def create_scores_bulk(
             ).all()
             total_points = (
                 sum((score.week_points - score.week_cost) for score in existing_scores)
-                + week_points - week_cost
+                + week_points
+                - week_cost
             )
 
             # Create new score
@@ -414,7 +415,7 @@ async def create_scores_bulk(
                 overall_points=total_points,
             )
             session.add(score)
-    
+
     session.commit()
     return RedirectResponse("/scores", status_code=302)
 
@@ -495,7 +496,7 @@ def update_score(
 
 @app.delete("/scores/{score_id}")
 def delete_score(
-    score_id: int, 
+    score_id: int,
     session: Session = session,
     current_user: str = Depends(get_current_user),
 ):
@@ -509,7 +510,7 @@ def delete_score(
 
 @app.post("/scores/{score_id}/delete")
 def delete_score_form(
-    score_id: int, 
+    score_id: int,
     session: Session = session,
     current_user: str = Depends(get_current_user),
 ):
@@ -525,7 +526,7 @@ def delete_score_form(
 # Vercel handler
 handler = app
 
-if __name__ == "__main__":
-    import uvicorn
+# if __name__ == "__main__":
+#     import uvicorn
 
-    uvicorn.run(app="main:app", host="0.0.0.0", port=8000, reload=True)
+#     uvicorn.run(app="main:app", host="0.0.0.0", port=8000, reload=True)
