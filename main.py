@@ -12,6 +12,7 @@ import json
 import os
 from dotenv import load_dotenv
 import secrets
+import uvicorn
 
 # Load environment variables
 load_dotenv()
@@ -524,9 +525,8 @@ def delete_score_form(
 
 
 # Vercel handler
-handler = app
+# handler = app
 
-# if __name__ == "__main__":
-#     import uvicorn
-
-#     uvicorn.run(app="main:app", host="0.0.0.0", port=8000, reload=True)
+# Vercel expects a handler for serverless functions
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
