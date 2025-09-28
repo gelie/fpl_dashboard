@@ -1,0 +1,20 @@
+header {
+    background-color: var(--pico-primary-background);
+    color: var(--pico-primary-inverse) !important;
+    /* padding: 1rem; */
+    text-align: center;
+    height: 6rem;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+header ul li a,
+button {
+    color: var(--pico-primary-inverse) !important;
+}
+
+.main-menu {
+    display: flex;
+    justify-content: space-evenly;
+    width: 60%;
+}

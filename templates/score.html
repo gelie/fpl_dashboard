@@ -1,0 +1,62 @@
+<!-- Add Scores for Gameweek Dialog -->
+<dialog id="add-score-dialog">
+  <article style="max-width: 800px; width: 90vw;">
+    <header>
+      <h3 id="dialog-title">Add Scores for Gameweek {{ next_gameweek }}</h3>
+      <button aria-label="Close" rel="prev" onclick="document.getElementById('add-score-dialog').close()"></button>
+    </header>
+    <form id="score-form" method="post" action="/scores">
+      <input type="hidden" name="gameweek" value="{{ next_gameweek }}">
+
+      <div style="margin-bottom: 1rem;">
+        <p><strong>Gameweek {{ next_gameweek }}</strong> - Enter points and costs for each player:</p>
+      </div>
+
+      <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Team</th>
+              <th>GW Points</th>
+              <th>GW Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for player in players %}
+            <tr>
+              <td>{{ player.team }}</td>
+              <td>
+                <input type="number" 
+                       name="week_points_{{ player.id }}" 
+                       placeholder="0" 
+                       min="0" 
+                       class="wide-score-input">
+              </td>
+              <td>
+                <input type="number" 
+                       name="week_cost_{{ player.id }}" 
+                       placeholder="0" 
+                       min="0" 
+                       class="wide-score-input">
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div
+        style="margin-top: 1rem; padding: 0.5rem; background-color: var(--pico-muted-color); border-radius: 0.25rem;">
+        <small><strong>Note:</strong> Leave fields empty for players who didn't play this gameweek. Overall points will
+          be calculated automatically.</small>
+      </div>
+    </form>
+
+    <footer>
+      <button class="secondary" onclick="document.getElementById('add-score-dialog').close()">
+        Cancel
+      </button>
+      <button id="submit-button" form="score-form">Add Scores for GW {{ next_gameweek }}</button>
+    </footer>
+  </article>
+</dialog>

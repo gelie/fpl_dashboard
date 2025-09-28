@@ -1,0 +1,425 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ul>
+    <li>Dashboard</li>
+  </ul>
+</nav>
+
+<div class="graphs-container">
+  <h1>FPL Team Performance</h1>
+
+  <div class="chart-section">
+    <h2>Weekly Scores per Team</h2>
+    <p>Points earned by each team per gameweek</p>
+    <div class="chart-container">
+      <canvas id="weeklyChart" width="800" height="400"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <h2>Overall Points per Team</h2>
+    <p>Cumulative total points for each team across all gameweeks</p>
+    <div class="chart-container">
+      <canvas id="overallChart" width="800" height="400"></canvas>
+    </div>
+  </div>
+</div>
+
+<style>
+  .graphs-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 0;
+  }
+
+  .chart-section {
+    margin-bottom: 3rem;
+    background: var(--pico-card-background-color);
+    padding: 2rem;
+    border-radius: var(--pico-border-radius);
+    box-shadow: var(--pico-card-box-shadow);
+  }
+
+  .chart-section h2 {
+    margin-top: 0;
+    color: var(--pico-primary-color);
+    border-bottom: 2px solid var(--pico-primary-color);
+    padding-bottom: 0.5rem;
+  }
+
+  .chart-section p {
+    color: var(--pico-muted-color);
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+
+  .chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  canvas {
+    max-width: 100%;
+    height: auto !important;
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .chart-container {
+      height: 300px;
+    }
+
+    .graphs-container {
+      padding: 1rem;
+    }
+
+    .chart-section {
+      padding: 1rem;
+    }
+  }
+</style>
+
+<script src="{{ url_for('static', path='/chart.min.js') }}"></script>
+<script>
+  console.log('Script is loading...');
+
+  // Track if charts have been initialized (use var to avoid redeclaration errors)
+  if (typeof window.chartsInitialized === 'undefined') {
+    window.chartsInitialized = false;
+  }
+
+  // Reset charts when content is swapped via HTMX
+  function resetCharts() {
+    console.log('Resetting charts...');
+    window.chartsInitialized = false;
+    if (window.weeklyChartInstance) {
+      window.weeklyChartInstance.destroy();
+      window.weeklyChartInstance = null;
+    }
+    if (window.overallChartInstance) {
+      window.overallChartInstance.destroy();
+      window.overallChartInstance = null;
+    }
+  }
+
+  // Function to initialize charts
+  function initializeCharts() {
+    if (window.chartsInitialized) {
+      console.log('Charts already initialized, skipping...');
+      return;
+    }
+    console.log('Initializing charts...');
+
+    // Clean up any existing charts first
+    if (window.weeklyChartInstance) {
+      console.log('Destroying existing weekly chart');
+      window.weeklyChartInstance.destroy();
+      window.weeklyChartInstance = null;
+    }
+    if (window.overallChartInstance) {
+      console.log('Destroying existing overall chart');
+      window.overallChartInstance.destroy();
+      window.overallChartInstance = null;
+    }
+
+    // Parse data from backend
+    const weeklyData = {{ weekly_chart_data | safe
+  }};
+  const overallData = {{ overall_chart_data | safe }};
+
+  // Debug: Log the data to console
+  console.log('Weekly data:', weeklyData);
+  console.log('Overall data:', overallData);
+  console.log('Weekly data type:', typeof weeklyData);
+  console.log('Overall data type:', typeof overallData);
+  console.log('Weekly data labels:', weeklyData?.labels);
+  console.log('Weekly data datasets length:', weeklyData?.datasets?.length);
+
+  // Check if Chart.js is loaded
+  console.log('Checking for Chart.js...');
+  console.log('typeof Chart:', typeof Chart);
+  console.log('window.Chart:', typeof window.Chart);
+  console.log('All window properties containing "chart":', Object.keys(window).filter(key => key.toLowerCase().includes('chart')));
+
+  if (typeof Chart === 'undefined' && typeof window.Chart === 'undefined') {
+    console.error('Chart.js is not loaded!');
+    document.getElementById('weeklyChart').parentElement.innerHTML = '<p style="color: red;">Error: Chart.js failed to load. Check browser network tab for loading issues.</p>';
+    document.getElementById('overallChart').parentElement.innerHTML = '<p style="color: red;">Error: Chart.js failed to load. Check browser network tab for loading issues.</p>';
+    return;
+  }
+
+  // Use window.Chart if Chart is not directly available
+  const ChartJS = typeof Chart !== 'undefined' ? Chart : window.Chart;
+
+  console.log('Chart.js loaded successfully, version:', Chart.version);
+
+  // Test simple chart creation
+  const testCanvas = document.createElement('canvas');
+  testCanvas.width = 100;
+  testCanvas.height = 100;
+  const testCtx = testCanvas.getContext('2d');
+  try {
+    const testChart = new ChartJS(testCtx, {
+      type: 'line',
+      data: {
+        labels: ['A', 'B'],
+        datasets: [{
+          label: 'Test',
+          data: [1, 2],
+          borderColor: 'red'
+        }]
+      }
+    });
+    console.log('Test chart created successfully:', testChart);
+    testChart.destroy();
+  } catch (testError) {
+    console.error('Test chart creation failed:', testError);
+  }
+
+  // Check if canvas elements exist
+  const weeklyCanvas = document.getElementById('weeklyChart');
+  const overallCanvas = document.getElementById('overallChart');
+
+  if (!weeklyCanvas) {
+    console.error('Weekly chart canvas not found!');
+    return;
+  }
+
+  if (!overallCanvas) {
+    console.error('Overall chart canvas not found!');
+    return;
+  }
+
+
+  console.log('Canvas elements found, creating charts...');
+
+  // Test canvas drawing capability
+  const canvasTestCtx = weeklyCanvas.getContext('2d');
+  canvasTestCtx.fillStyle = 'red';
+  canvasTestCtx.fillRect(10, 10, 50, 50);
+  console.log('Drew test rectangle on weekly canvas');
+
+  try {
+    // Weekly Chart
+    console.log('Creating weekly chart...');
+    const weeklyCtx = weeklyCanvas.getContext('2d');
+    console.log('Weekly canvas context:', weeklyCtx);
+    console.log('About to create Chart with data:', weeklyData);
+
+    const weeklyChart = window.weeklyChartInstance = new ChartJS(weeklyCtx, {
+      type: 'line',
+      data: weeklyData,
+      options: {
+        responsive: false,
+        maintainAspectRatio: true,
+        interaction: {
+          mode: 'index',
+          intersect: false,
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              usePointStyle: true,
+              padding: 20,
+              font: {
+                size: 12
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderWidth: 1,
+            cornerRadius: 6,
+            displayColors: true,
+            callbacks: {
+              title: function (context) {
+                return 'Gameweek ' + context[0].label;
+              },
+              label: function (context) {
+                const value = context.parsed.y;
+                const sign = value >= 0 ? '+' : '';
+                return context.dataset.label + ': ' + sign + value + ' pts';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            display: true,
+            title: {
+              display: true,
+              text: 'Gameweek',
+              font: {
+                size: 14,
+                weight: 'bold'
+              }
+            },
+            grid: {
+              color: 'rgba(0, 0, 0, 0.1)'
+            }
+          },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: 'Points',
+              font: {
+                size: 14,
+                weight: 'bold'
+              }
+            },
+            grid: {
+              color: 'rgba(0, 0, 0, 0.1)'
+            }
+          }
+        },
+        elements: {
+          line: {
+            tension: 0.4
+          },
+          point: {
+            radius: 4,
+            hoverRadius: 6
+          }
+        }
+      }
+    });
+    console.log('Weekly chart created successfully');
+    console.log('Weekly chart instance:', weeklyChart);
+    console.log('Weekly chart canvas dimensions:', weeklyCanvas.width, 'x', weeklyCanvas.height);
+
+    // Overall Chart
+    console.log('Creating overall chart...');
+    const overallCtx = overallCanvas.getContext('2d');
+    console.log('Overall canvas context:', overallCtx);
+    const overallChart = window.overallChartInstance = new ChartJS(overallCtx, {
+      type: 'line',
+      data: overallData,
+      options: {
+        responsive: false,
+        maintainAspectRatio: true,
+        interaction: {
+          mode: 'index',
+          intersect: false,
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              usePointStyle: true,
+              padding: 20,
+              font: {
+                size: 12
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: 'rgba(255, 255, 255, 0.1)',
+            borderWidth: 1,
+            cornerRadius: 6,
+            displayColors: true,
+            callbacks: {
+              title: function (context) {
+                return 'Gameweek ' + context[0].label;
+              },
+              label: function (context) {
+                return context.dataset.label + ': ' + context.parsed.y + ' pts';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            display: true,
+            title: {
+              display: true,
+              text: 'Gameweek',
+              font: {
+                size: 14,
+                weight: 'bold'
+              }
+            },
+            grid: {
+              color: 'rgba(0, 0, 0, 0.1)'
+            }
+          },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: 'Total Points',
+              font: {
+                size: 14,
+                weight: 'bold'
+              }
+            },
+            beginAtZero: true,
+            grid: {
+              color: 'rgba(0, 0, 0, 0.1)'
+            }
+          }
+        },
+        elements: {
+          line: {
+            tension: 0.4
+          },
+          point: {
+            radius: 4,
+            hoverRadius: 6
+          }
+        }
+      }
+    });
+
+    // Handle responsive behavior
+    window.addEventListener('resize', function () {
+      weeklyChart.resize();
+      overallChart.resize();
+    });
+
+    console.log('Overall chart created successfully');
+    console.log('Overall chart instance:', overallChart);
+    console.log('Overall chart canvas dimensions:', overallCanvas.width, 'x', overallCanvas.height);
+    console.log('Charts created successfully!');
+
+    // Mark as initialized
+    window.chartsInitialized = true;
+  } catch (error) {
+    console.error('Error creating charts:', error);
+    document.getElementById('weeklyChart').parentElement.innerHTML = '<p style="color: red;">Error creating charts: ' + error.message + '</p>';
+    document.getElementById('overallChart').parentElement.innerHTML = '<p style="color: red;">Error creating charts: ' + error.message + '</p>';
+  }
+  }
+
+  // Try multiple ways to initialize charts
+  console.log('Setting up chart initialization...');
+
+  // Method 1: DOMContentLoaded (for full page loads)
+  document.addEventListener('DOMContentLoaded', function () {
+    console.log('DOMContentLoaded fired');
+    initializeCharts();
+  });
+
+  // Method 2: Immediate execution (for HTMX partial loads)
+  if (document.readyState === 'loading') {
+    console.log('Document still loading, waiting for DOMContentLoaded');
+  } else {
+    console.log('Document already loaded, initializing with delay');
+    setTimeout(initializeCharts, 500); // Give Chart.js time to load
+  }
+
+  // Simple initialization - no HTMX complexity needed
+</script>
+{% endblock %}

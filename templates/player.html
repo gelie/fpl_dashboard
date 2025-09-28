@@ -1,0 +1,29 @@
+<!-- Add Player Dialog -->
+<dialog id="add-player-dialog">
+  <article>
+    <header>
+      <h3 id="dialog-title">Add New Player</h3>
+      <button aria-label="Close" rel="prev" onclick="document.getElementById('add-player-dialog').close()"></button>
+      <!-- <button class="close" onclick="document.getElementById('add-player-dialog').close()">&times;</button> -->
+    </header>
+    <form id="player-form" method="post" action="/players">
+      <div class="grid">
+        <label for="name">
+          Player Name
+          <input type="text" id="name" name="name" placeholder="Enter player name" required>
+        </label>
+        <label for="team">
+          Team
+          <input type="text" id="team" name="team" placeholder="Enter team name" required>
+        </label>
+      </div>
+    </form>
+    <footer>
+      <button class="secondary" onclick="document.getElementById('add-player-dialog').close()">
+        Cancel
+      </button>
+      <button id="submit-button" form="player-form">Add Player</button>
+    </footer>
+    <!-- </form> -->
+  </article>
+</dialog>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Fantasy Premier League Dashboard</title>
+  <link rel="shortcut icon" href="{{url_for('static', path='/favicon.ico')}}" type="image/x-icon">
+  <link rel="stylesheet" href="{{url_for('static', path='/pico.min.css')}}">
+  <link rel="stylesheet" href="{{url_for('static', path='/pico_custom.css')}}">
+  <link rel="stylesheet" href="{{url_for('static', path='/styles.css')}}">
+</head>
+
+<body>
+  <header>
+    <nav>
+      <ul>
+        <li id="logo"><a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', path='/logo.png') }}" alt="FPL Dashboard" style="height: 40px;"></a></li>
+        <li class="mobile-menu-toggle">
+          <button onclick="toggleMobileMenu()" class="outline" style="display: none;">☰</button>
+        </li>
+      </ul>
+      <div id="mobile-menu" class="mobile-menu-content">
+        <ul class="main-menu">
+          <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+          <li><a href="/players">Players</a></li>
+          <li><a href="/scores">Scores</a></li>
+        </ul>
+        <ul class="auth-menu">
+          {% if is_admin %}
+          <li><small>Welcome, {{ current_user }}!</small></li>
+          <li><button onclick="logout()" class="secondary outline">Logout</button></li>
+          {% else %}
+          <li><button onclick="login()" class="outline">Admin Login</button></li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <script>
+    function login() {
+      // Navigate to protected login endpoint to trigger HTTP Basic Auth
+      window.location.href = '/login';
+    }
+
+    function logout() {
+      // Force credential clearing by making request with invalid credentials
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', '/logout-clear', true, 'invalid', 'invalid');
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          // Redirect to dashboard after clearing credentials
+          window.location.href = '/';
+        }
+      };
+      xhr.send();
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('active');
+    }
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+      const menu = document.getElementById('mobile-menu');
+      const toggle = document.querySelector('.mobile-menu-toggle');
+      
+      if (!menu.contains(event.target) && !toggle.contains(event.target)) {
+        menu.classList.remove('active');
+      }
+    });
+
+    // Close mobile menu when window is resized to desktop
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 768) {
+        document.getElementById('mobile-menu').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+
+</html>

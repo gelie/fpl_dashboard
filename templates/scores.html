@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ul>
+    <li><a href="/">Dashboard</a></li>
+    <li>Scores</li>
+  </ul>
+</nav>
+
+<section>
+  <h3>Scores Management</h3>
+  <!-- Add Score Button (Admin Only) -->
+  {% if is_admin %}
+  <div class="mb-4">
+    <button class="btn btn-primary" onclick="addScore()">
+      Add Scores for GW {{ next_gameweek }}
+  </div>
+  {% endif %}
+
+  <!-- Scores Table -->
+  <div class="table-container">
+    <table class="scores-table">
+      <thead>
+        <tr>
+          <!-- <th>ID</th> -->
+          <th>Player</th>
+          <th>Gameweek</th>
+          <th>Week Points</th>
+          <th>Week Cost</th>
+          <th>Overall Points</th>
+          {% if is_admin %}
+          <th>Actions</th>
+          {% else %}
+          <th>Status</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="6">
+            <form method="get" action="/scores" style="display: flex; gap: 1rem; align-items: center;">
+              <label>
+                Filter by Player:
+                <select name="player_id" onchange="this.form.submit()">
+                  <option value="">All Players</option>
+                  {% for player in players %}
+                  <option value="{{ player.id }}" {% if player_id == player.id %}selected{% endif %}>{{ player.team }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label>
+                Filter by Gameweek:
+                <select name="gameweek" onchange="this.form.submit()">
+                  <option value="">All Gameweeks</option>
+                  {% for i in range(1, max_gameweek + 1) %}
+                  <option value="{{ i }}" {% if gameweek == i %}selected{% endif %}>{{ i }}</option>
+                  {% endfor %}
+                </select>
+              </label>
+            </form>
+          </td>
+          <td colspan="4" style="text-align: center; font-style: italic; color: #666;">
+            Filter by player and/or gameweek
+          </td>
+        </tr>
+        {% for score in scores %}
+        <tr>
+          <!-- <td>{{ score.id }}</td> -->
+          <td>{{ score.player.team }}</td>
+          <td>{{ score.gameweek }}</td>
+          <td>{{ score.week_points }}</td>
+          <td>{{ score.week_cost }}</td>
+          <td>{{ score.overall_points }}</td>
+          <td>
+            {% if is_admin %}
+            <div class="action-buttons">
+              <button class="outline"
+                onclick="editScore('{{ score.id }}', '{{ score.player.id }}', '{{ score.gameweek }}', '{{ score.week_points }}', '{{ score.week_cost }}')">
+                Edit
+              </button><!--
+              --><form method="post" action="/scores/{{ score.id }}/delete"
+                onsubmit="return confirm('Are you sure you want to delete this score?')">
+                <button type="submit" class="secondary">
+                  Delete
+                </button>
+              </form>
+            </div>
+            {% else %}
+            <span class="text-muted">View Only</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+        {% if not scores %}
+        <tr>
+          <td colspan="6" class="text-center">No scores found. Add some scores to get started!</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% include 'score.html' %}
+
+<script>
+  function addScore() {
+    // Clear all input fields in the form
+    const form = document.getElementById('score-form');
+    const inputs = form.querySelectorAll('input[type="number"]');
+    inputs.forEach(input => {
+      if (!input.name.includes('gameweek')) { // Don't clear the hidden gameweek field
+        input.value = '';
+      }
+    });
+
+    // Show modal
+    document.getElementById('add-score-dialog').showModal();
+  }
+
+  function editScore(scoreId, playerId, gameweek, weekPoints, weekCost) {
+    // Set form for editing existing score
+    document.getElementById('dialog-title').textContent = 'Edit Score';
+    document.getElementById('score-form').action = '/scores/' + scoreId;
+    document.getElementById('submit-button').textContent = 'Update Score';
+
+    // Populate form fields with existing data
+    document.getElementById('player_id').value = playerId;
+    document.getElementById('gameweek').value = gameweek;
+    document.getElementById('week_points').value = weekPoints;
+    document.getElementById('week_cost').value = weekCost;
+
+    // Show modal
+    document.getElementById('add-score-dialog').showModal();
+  }
+</script>
+{% endblock %}
