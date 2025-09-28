@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from typing import Optional
 from fastapi import FastAPI, Form, HTTPException, Depends, Request, Query, status
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.responses import HTMLResponse, RedirectResponse, Response, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlmodel import SQLModel, Session, create_engine, select
@@ -92,6 +92,11 @@ def add_auth_context(request: Request, context: dict):
     context["is_admin"] = is_admin
     context["current_user"] = current_user
     return context
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return FileResponse("static/favicon.ico")
 
 
 @app.get("/", response_class=HTMLResponse, name="dashboard")
