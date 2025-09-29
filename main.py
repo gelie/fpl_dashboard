@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from typing import Optional
 from fastapi import FastAPI, Form, HTTPException, Depends, Request, Query, status
-from fastapi.responses import HTMLResponse, RedirectResponse, Response, FileResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlmodel import SQLModel, Session, create_engine, select
@@ -94,11 +94,6 @@ def add_auth_context(request: Request, context: dict):
     return context
 
 
-@app.get("/favicon.ico", include_in_schema=False)
-async def favicon():
-    return FileResponse("static/favicon.ico")
-
-
 @app.get("/", response_class=HTMLResponse, name="dashboard")
 def dashboard(request: Request, session: Session = session):
     # Get all scores with player and team information
@@ -135,9 +130,9 @@ def dashboard(request: Request, session: Session = session):
 
     # Color palette for teams
     colors = [
-        "#FF6384",
+        "#32CD32",
         "#36A2EB",
-        "#FFCE56",
+        "#FF6384",
         "#4BC0C0",
         "#9966FF",
         "#FF9F40",
