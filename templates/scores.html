@@ -25,10 +25,10 @@
         <tr>
           <!-- <th>ID</th> -->
           <th>Player</th>
-          <th>Gameweek</th>
-          <th>Week Points</th>
-          <th>Week Cost</th>
-          <th>Overall Points</th>
+          <th>GW</th>
+          <th>Points</th>
+          <th>TC</th>
+          <th>OP</th>
           {% if is_admin %}
           <th>Actions</th>
           {% else %}
@@ -76,11 +76,11 @@
           <td>
             {% if is_admin %}
             <div class="action-buttons">
-              <button class="outline"
+              <button class="primary"
                 onclick="editScore('{{ score.id }}', '{{ score.player.id }}', '{{ score.gameweek }}', '{{ score.week_points }}', '{{ score.week_cost }}')">
                 Edit
-              </button><!--
-              --><form method="post" action="/scores/{{ score.id }}/delete"
+              </button>
+              <form method="post" action="/scores/{{ score.id }}/delete"
                 onsubmit="return confirm('Are you sure you want to delete this score?')">
                 <button type="submit" class="secondary">
                   Delete

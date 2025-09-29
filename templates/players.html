@@ -44,11 +44,11 @@
           <td>
             {% if is_admin %}
             <div class="action-buttons">
-              <button class="outline"
-                onclick="editPlayer('{{ player.id }}', '{{ player.name }}', '{{ player.team }}')">
+              <button class="primary" onclick="editPlayer('{{ player.id }}', '{{ player.name }}', '{{ player.team }}')">
                 Edit
               </button><!--
-              --><form method="post" action="/players/{{ player.id }}/delete"
+              -->
+              <form method="post" action="/players/{{ player.id }}/delete"
                 onsubmit="return confirm('Are you sure you want to delete this player?')">
                 <button type="submit" class="secondary">
                   Delete

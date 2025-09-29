@@ -15,7 +15,8 @@
   <header>
     <nav>
       <ul>
-        <li id="logo"><a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', path='/logo.png') }}" alt="FPL Dashboard" style="height: 40px;"></a></li>
+        <li id="logo"><a href="{{ url_for('dashboard') }}"><img src="{{ url_for('static', path='/logo.png') }}"
+              alt="FPL Dashboard" style="height: 40px;"></a></li>
         <li class="mobile-menu-toggle">
           <button onclick="toggleMobileMenu()" class="outline" style="display: none;">☰</button>
         </li>
@@ -28,7 +29,7 @@
         </ul>
         <ul class="auth-menu">
           {% if is_admin %}
-          <li><small>Welcome, {{ current_user }}!</small></li>
+          <li><small class="primary-color">Welcome, {{ current_user }}!</small></li>
           <li><button onclick="logout()" class="secondary outline">Logout</button></li>
           {% else %}
           <li><button onclick="login()" class="outline">Admin Login</button></li>
@@ -38,7 +39,7 @@
     </nav>
   </header>
 
-  <main class="container">
+  <main>
     {% block content %}
     {% endblock %}
   </main>
@@ -53,7 +54,7 @@
       // Force credential clearing by making request with invalid credentials
       const xhr = new XMLHttpRequest();
       xhr.open('GET', '/logout-clear', true, 'invalid', 'invalid');
-      xhr.onreadystatechange = function() {
+      xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
           // Redirect to dashboard after clearing credentials
           window.location.href = '/';
@@ -68,17 +69,17 @@
     }
 
     // Close mobile menu when clicking outside
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event) {
       const menu = document.getElementById('mobile-menu');
       const toggle = document.querySelector('.mobile-menu-toggle');
-      
+
       if (!menu.contains(event.target) && !toggle.contains(event.target)) {
         menu.classList.remove('active');
       }
     });
 
     // Close mobile menu when window is resized to desktop
-    window.addEventListener('resize', function() {
+    window.addEventListener('resize', function () {
       if (window.innerWidth > 768) {
         document.getElementById('mobile-menu').classList.remove('active');
       }

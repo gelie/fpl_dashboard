@@ -113,17 +113,29 @@ article>footer {
 }
 
 /* Center numeric columns in scores table */
-.scores-table td:nth-child(2), /* Gameweek */
-.scores-table td:nth-child(3), /* Week Points */
-.scores-table td:nth-child(4), /* Week Cost */
-.scores-table td:nth-child(5)  /* Overall Points */ {
+.scores-table td:nth-child(2),
+/* Gameweek */
+.scores-table td:nth-child(3),
+/* Week Points */
+.scores-table td:nth-child(4),
+/* Week Cost */
+.scores-table td:nth-child(5)
+
+/* Overall Points */
+    {
     text-align: center;
 }
 
-.scores-table th:nth-child(2), /* Gameweek header */
-.scores-table th:nth-child(3), /* Week Points header */
-.scores-table th:nth-child(4), /* Week Cost header */
-.scores-table th:nth-child(5)  /* Overall Points header */ {
+.scores-table th:nth-child(2),
+/* Gameweek header */
+.scores-table th:nth-child(3),
+/* Week Points header */
+.scores-table th:nth-child(4),
+/* Week Cost header */
+.scores-table th:nth-child(5)
+
+/* Overall Points header */
+    {
     text-align: center;
 }
 
@@ -170,17 +182,19 @@ article>footer {
 
 /* Mobile-first responsive design */
 @media (max-width: 768px) {
+
     /* Mobile navigation */
     .mobile-menu-toggle {
         display: block !important;
+        color: var(--pico-primary-color);
     }
-    
+
     .mobile-menu-toggle button {
         display: block !important;
         font-size: 1.5rem;
         padding: 0.5rem;
     }
-    
+
     .mobile-menu-content {
         position: absolute;
         top: 100%;
@@ -194,92 +208,98 @@ article>footer {
         display: none;
         z-index: 1000;
     }
-    
+
     .mobile-menu-content.active {
         display: flex;
     }
-    
+
     .mobile-menu-content .main-menu,
     .mobile-menu-content .auth-menu {
         flex-direction: column;
         width: 100%;
         gap: 0.5rem;
+        background-color: var(--pico-primary-background);
     }
-    
+
     .mobile-menu-content .main-menu li,
     .mobile-menu-content .auth-menu li {
         text-align: center;
         width: 100%;
     }
-    
-    .mobile-menu-content .auth-menu button {
-        width: 100%;
+
+    .mobile-menu-content .main-menu a,
+    .mobile-menu-content .auth-menu a {
+        color: var(--pico-primary-color);
     }
-    
+
+    .mobile-menu-content .auth-menu button {
+        /* width: 100%; */
+    }
+
     /* Header positioning */
     header nav {
         position: relative;
     }
-    
+
     /* Container adjustments */
     .container {
         padding: 0.5rem !important;
         margin: 0 auto;
     }
-    
+
     /* Table responsiveness */
     .table-container {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-    
+
     table {
         font-size: 0.875rem;
         min-width: 600px;
     }
-    
+
     table th,
     table td {
         padding: 0.5rem 0.25rem;
         white-space: nowrap;
     }
-    
+
     /* Action buttons */
     .action-buttons {
         gap: 0.25rem;
         flex-direction: column;
     }
-    
+
     .action-buttons button {
         padding: 0.25rem 0.5rem;
         font-size: 0.8rem;
         width: 100%;
     }
-    
+
     /* Score input improvements */
     .wide-score-input {
         width: 90px !important;
         font-size: 0.9rem;
         padding: 0.4rem !important;
     }
-    
+
     /* Dialog responsiveness */
     dialog article {
         max-width: 95vw !important;
         margin: 1rem;
     }
-    
+
     /* Chart containers */
     .chart-container {
         height: 250px !important;
     }
-    
+
     /* Form improvements */
     .grid {
         grid-template-columns: 1fr !important;
         gap: 0.5rem;
     }
-    
+
     /* Button improvements */
     button {
         padding: 0.75rem 1rem;
@@ -292,15 +312,15 @@ article>footer {
     .container {
         padding: 1rem;
     }
-    
+
     table {
         font-size: 0.9rem;
     }
-    
+
     .chart-container {
         height: 300px;
     }
-    
+
     .action-buttons {
         gap: 0.375rem;
     }
@@ -311,12 +331,15 @@ article>footer {
     .container {
         max-width: 1200px;
     }
-    
+
     .chart-container {
         height: 400px;
     }
-    
+
     table {
         font-size: 1rem;
     }
 }
+
+.auth-menu {
+    color: var(--pico-primary-color);
