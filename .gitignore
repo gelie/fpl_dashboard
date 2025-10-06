@@ -10,3 +10,7 @@ wheels/
 .venv
 .vercel
 .env
+
+fpl.db
+# pytest.ini
+# tests.py

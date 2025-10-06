@@ -123,6 +123,50 @@ The project includes a `vercel.json` file with the following configuration:
 
 4. **Open browser**: Navigate to `http://localhost:8000`
 
+## 🧪 Testing
+
+The project includes comprehensive end-to-end tests using pytest.
+
+### Running Tests
+
+1. **Install test dependencies** (if not already installed):
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Run all tests**:
+   ```bash
+   pytest
+   ```
+
+3. **Run tests with verbose output**:
+   ```bash
+   pytest -v
+   ```
+
+4. **Run specific test classes**:
+   ```bash
+   pytest tests.py::TestDashboard -v
+   pytest tests.py::TestPlayers -v
+   pytest tests.py::TestScores -v
+   ```
+
+### Test Coverage
+
+The test suite covers:
+- **Dashboard**: Chart data generation and rendering
+- **Authentication**: Login/logout functionality and access control
+- **Player Management**: CRUD operations with proper authorization
+- **Score Management**: Bulk creation, updates, filtering, and calculations
+- **Edge Cases**: Error handling, invalid inputs, and boundary conditions
+
+### Test Structure
+
+- **Fixtures**: Automated test database setup with sample data
+- **Authentication**: Tests both authenticated and unauthenticated scenarios
+- **Database**: Uses in-memory SQLite for fast, isolated tests
+- **HTTP Client**: FastAPI TestClient for realistic request/response testing
+
 ## 📊 Usage
 
 ### For Viewers (Anonymous Users)

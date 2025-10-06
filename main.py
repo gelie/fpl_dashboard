@@ -197,7 +197,7 @@ def dashboard(request: Request, session: Session = session):
         "overall_chart_data": json.dumps(overall_chart_data),
     }
     context = add_auth_context(request, context)
-    return templates.TemplateResponse("dashboard.html", context)
+    return templates.TemplateResponse(request, "dashboard.html", context)
 
 
 @app.get("/login")
@@ -239,7 +239,7 @@ def players(request: Request, session: Session = session):
         "title": "Players",
     }
     context = add_auth_context(request, context)
-    return templates.TemplateResponse("players.html", context)
+    return templates.TemplateResponse(request, "players.html", context)
 
 
 @app.post("/players")
@@ -351,7 +351,7 @@ def scores(
         "gameweek": gameweek_int,
     }
     context = add_auth_context(request, context)
-    return templates.TemplateResponse("scores.html", context)
+    return templates.TemplateResponse(request, "scores.html", context)
 
 
 @app.post("/scores")

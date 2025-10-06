@@ -1,5 +1,6 @@
 from sqlmodel import SQLModel, Field, Relationship
 from sqlalchemy import Column, Integer, CheckConstraint
+from pydantic import ConfigDict
 
 
 class Player(SQLModel, table=True):
@@ -11,8 +12,7 @@ class Player(SQLModel, table=True):
     # Relationship to Scores
     scores: list["Score"] = Relationship(back_populates="player")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Score(SQLModel, table=True):
@@ -33,9 +33,7 @@ class Score(SQLModel, table=True):
     # Relationship to Player
     player: Player = Relationship(back_populates="scores")
 
-    class Config:
-        from_attributes = True
-        unique_together = ("player_id", "gameweek")
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PlayerForm(SQLModel):
