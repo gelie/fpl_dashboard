@@ -11,6 +11,6 @@ wheels/
 .vercel
 .env
 
-fpl.db
+# fpl.db
 # pytest.ini
 # tests.py
