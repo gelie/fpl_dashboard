@@ -258,7 +258,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 🎯 Live Demo
 
-Once deployed, your app will be available at: `https://your-project-name.vercel.app`
+Once deployed, your app will be available at: `https://fpl-dashboard-ten.vercel.app/`
 
 ---
 

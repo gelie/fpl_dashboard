@@ -1,18 +1,20 @@
-from contextlib import asynccontextmanager
-from typing import Optional
-from fastapi import FastAPI, Form, HTTPException, Depends, Request, Query, status
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from sqlmodel import SQLModel, Session, create_engine, select
-from models import Player, Score, PlayerForm
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from collections import defaultdict
 import json
 import os
-from dotenv import load_dotenv
 import secrets
+from collections import defaultdict
+from contextlib import asynccontextmanager
+from typing import Optional
+
 import uvicorn
+from dotenv import load_dotenv
+from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request, status
+from fastapi.responses import RedirectResponse, Response
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from sqlmodel import Session, SQLModel, create_engine, select
+
+from models import Player, PlayerForm, Score
 
 # Load environment variables
 load_dotenv()
@@ -94,7 +96,7 @@ def add_auth_context(request: Request, context: dict):
     return context
 
 
-@app.get("/", response_class=HTMLResponse, name="dashboard")
+@app.get("/", name="dashboard")
 def dashboard(request: Request, session: Session = session):
     # Get all scores with player and team information
     scores = session.exec(
