@@ -423,12 +423,12 @@ async def create_scores_bulk(
     return RedirectResponse("/scores", status_code=302)
 
 
-# @app.get("/scores/{score_id}")
-# def edit_score(score_id: int, session: Session = session):
-#     score = session.get(Score, score_id)
-#     if not score:
-#         raise HTTPException(status_code=404, detail="Score not found")
-#     return templates.TemplateResponse("edit_score.html", {"score": score})
+@app.get("/scores/{score_id}")
+def edit_score(score_id: int, session: Session = session):
+    score = session.get(Score, score_id)
+    if not score:
+        raise HTTPException(status_code=404, detail="Score not found")
+    return templates.TemplateResponse("edit_score.html", {"score": score})
 
 
 @app.post("/scores/{score_id}")
