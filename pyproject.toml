@@ -5,13 +5,23 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+<<<<<<< HEAD
     "fastapi[standard]>=0.117.1",
     "sqlmodel>=0.0.25",
     "uvicorn>=0.36.0",
+=======
+    "fastapi[standard]>=0.136.1",
+    "sqlmodel>=0.0.38",
+>>>>>>> 6905a2c (GW37 updated)
 ]
 
 [dependency-groups]
 dev = [
+<<<<<<< HEAD
     "pytest[fastapi]>=8.4.2",
     "ruff>=0.13.1",
+=======
+    "pytest[fastapi]>=9.0.3",
+    "ruff>=0.15.13",
+>>>>>>> 6905a2c (GW37 updated)
 ]
